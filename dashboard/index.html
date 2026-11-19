@@ -1,15 +1,118 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Token Radar: pre-token protocols ranked by implied value</title>
-<link rel="stylesheet" href="app.css">
+<title>Token Launch Radar — pre-token protocols, ranked by implied value</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<a class="skip" href="#board">Skip to the board</a>
-<main id="board" tabindex="-1" aria-busy="true"></main>
+<header class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <p class="eyebrow">TOKEN LAUNCH RADAR &middot; MODEL radar-2</p>
+      <h1>Which protocol launches next &mdash; and what is it worth?</h1>
+      <p class="lede">Every protocol in this snapshot that records no token, ranked by an implied value built only from its own TVL, its seven-day growth and how long it has run with no token. Click any row for its farm plan.</p>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<main>
+  <section class="controls" aria-label="Board filters">
+    <label>Search <input id="q" type="search" placeholder="protocol name or slug&hellip;" autocomplete="off"></label>
+    <label>Category
+      <select id="category"><option value="">All categories</option></select>
+    </label>
+    <label>Chain
+      <select id="chain"><option value="">All chains</option></select>
+    </label>
+    <label>Sort by
+      <select id="sort">
+        <option value="value">Implied value (high to low)</option>
+        <option value="tvl">TVL (high to low)</option>
+        <option value="growth">7-day growth (high to low)</option>
+        <option value="age">Age with no token (oldest first)</option>
+        <option value="name">Name (A to Z)</option>
+      </select>
+    </label>
+    <button id="reset" type="button">Reset</button>
+  </section>
+
+  <p class="count" id="count"></p>
+
+  <section class="board-wrap">
+    <table class="board" id="board">
+      <thead>
+        <tr>
+          <th data-sort="rank">#</th>
+          <th data-sort="name">Protocol</th>
+          <th data-sort="category">Category</th>
+          <th data-sort="chains">Chains</th>
+          <th data-sort="tvl" class="num">TVL</th>
+          <th data-sort="growth" class="num">7-day</th>
+          <th data-sort="age" class="num">Age, no token</th>
+          <th data-sort="value" class="num">Implied value</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+
+  <section class="detail" id="detail" hidden>
+    <div class="detail-head">
+      <div>
+        <p class="eyebrow" id="detail-kicker"></p>
+        <h2 id="detail-name"></h2>
+        <p class="detail-sub" id="detail-sub"></p>
+      </div>
+      <button id="detail-close" type="button" aria-label="Close detail">&times;</button>
+    </div>
+    <div class="detail-grid">
+      <div>
+        <h3>The model, step by step</h3>
+        <dl class="model-lines" id="detail-model"></dl>
+        <p class="note">Implied value = TVL &times; 0.30 &times; growth multiplier &times; maturity multiplier. Growth is the 7-day TVL change clamped to &minus;50&hellip;+150%. Maturity is 0.50 + 0.50 &times; (1 &minus; e<sup>&minus;age/365</sup>), so a protocol that has run longer with no token recorded sits closer to its full base.</p>
+      </div>
+      <div>
+        <h3>How to farm it</h3>
+        <ol class="steps" id="detail-steps"></ol>
+        <p class="note">A plan, not a promise: the snapshot carries no airdrop flag, no points program and no launch date. Nothing here invents one.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="live">
+    <h2>Already trading &mdash; not ranked</h2>
+    <p>These protocols record a token that already trades, so the radar shows the market&rsquo;s own market cap instead of a model value. They are context, never ranked above a pre-token protocol.</p>
+    <table class="board live-table">
+      <thead>
+        <tr><th>Protocol</th><th>Category</th><th class="num">TVL</th><th class="num">Market cap</th><th class="num">7-day</th></tr>
+      </thead>
+      <tbody id="live-rows"></tbody>
+    </table>
+  </section>
+
+  <section class="method">
+    <h2>How the radar works</h2>
+    <ol>
+      <li><strong>Scope.</strong> 758 protocols at or above $5M TVL, as of the snapshot date. A protocol is pre-token when its record carries no market cap, no CoinGecko id and no symbol &mdash; the record may simply not carry one, so the radar says &ldquo;records no token&rdquo;, never &ldquo;has none&rdquo;.</li>
+      <li><strong>Floor.</strong> The watchlist is the 40 pre-token protocols at or above $50M TVL that are not wrapped, staked or bridged products of a token that already trades. The board ranks all 40, then adds the largest pre-token protocols below the floor.</li>
+      <li><strong>Value.</strong> Base = TVL &times; 0.30. Growth multiplier = 1 + clamped 7-day change &times; 0.60, floored at 0.55. Maturity multiplier = 0.50 + 0.50 &times; (1 &minus; e<sup>&minus;age/365</sup>). No name is ever special-cased.</li>
+      <li><strong>Farm plans.</strong> Seven steps per protocol, built from its own category, chains, TVL tier and age: what to do, what it costs, how long it takes.</li>
+    </ol>
+  </section>
+</main>
+
+<footer>
+  <p>Token Launch Radar &middot; snapshot as of <span id="asof"></span> &middot; source: <span id="source"></span> &middot; data is a sealed snapshot, not live prices. This board is the entry&rsquo;s own claim about implied value, not a prediction that a token will launch.</p>
+</footer>
+
 <script src="../data.js"></script>
-<script src="app.js"></script>
+<script src="model.js"></script>
+<script src="detail.js"></script>
+<script src="board.js"></script>
+<script src="filter.js"></script>
 </body>
 </html>
